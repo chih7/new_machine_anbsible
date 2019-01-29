@@ -1,0 +1,6 @@
+---
+- name: Set New Machine
+  hosts: ro
+
+  roles:
+    - role: new_user

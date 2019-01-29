@@ -1,0 +1,6 @@
+---
+- name: install base packages
+  yum:
+    name: "{{ packages }}"
+    state: present
+  register: installation

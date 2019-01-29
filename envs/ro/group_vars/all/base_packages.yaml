@@ -1,0 +1,6 @@
+---
+packages:
+  - zsh
+  - vim
+  - git
+  - sudo

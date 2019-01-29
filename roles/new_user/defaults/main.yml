@@ -1,0 +1,10 @@
+---
+
+user_groups: []
+user_name: "chih"
+user_shell: "/bin/zsh"
+user_generate_ssh_key: True
+
+user_local_ssh_key_path: "~/.ssh/id_rsa.pub"
+
+user_enable_passwordless_sudo: True
