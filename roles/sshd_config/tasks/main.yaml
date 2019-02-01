@@ -1,0 +1,57 @@
+---
+# commented and non commented line
+- name: sshd PermitRootLogin set to '{{ sshd_PermitRootLogin }}'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin {{ sshd_PermitRootLogin }}'
+    validate: 'sshd -t -f %s'
+  register: PermitRootLogin_changed
+  when: sshd_PermitRootLogin is defined
+
+- name: sshd \#PermitRootLogin set to '{{ sshd_PermitRootLogin }}'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^#PermitRootLogin'
+    line: 'PermitRootLogin {{ sshd_PermitRootLogin }}'
+    validate: 'sshd -t -f %s'
+  when: sshd_PermitRootLogin is defined and PermitRootLogin_changed.changed == false
+
+- name: sshd PasswordAuthentication set to '{{ sshd_PasswordAuthentication }}'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication {{ sshd_PasswordAuthentication }}'
+    validate: 'sshd -t -f %s'
+  register: PasswordAuthentication_changed
+  when: sshd_PasswordAuthentication is defined
+
+- name: sshd \#PasswordAuthentication set to '{{ sshd_PasswordAuthentication }}'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^#PasswordAuthentication'
+    line: 'PasswordAuthentication {{ sshd_PasswordAuthentication }}'
+    validate: 'sshd -t -f %s'
+  when: sshd_PasswordAuthentication is defined and PasswordAuthentication_changed.changed == false
+
+- name: SSH ListenPort set to '{{ sshd_ListenPort }}'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^Port'
+    line: 'Port {{ sshd_ListenPort }}'
+    validate: 'sshd -t -f %s'
+  register: ListenPort_changed
+  when: sshd_ListenPort is defined
+
+- name: SSH \#ListenPort set to '{{ sshd_ListenPort }}'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^#Port'
+    line: 'Port {{ sshd_ListenPort }}'
+    validate: 'sshd -t -f %s'
+  when: sshd_ListenPort is defined and ListenPort_changed.changed == false
+
+- name: Restart sshd.service
+  systemd:
+    state: restarted
+    name: sshd

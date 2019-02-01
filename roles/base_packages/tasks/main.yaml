@@ -1,4 +1,9 @@
 ---
+- name: upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+
 - name: install base packages
   yum:
     name: "{{ packages }}"

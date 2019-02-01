@@ -1,0 +1,22 @@
+---
+
+- name: Config bbr in sysctl
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: "bbr.conf"
+      dest: "/etc/sysctl.d/"
+      mode: "0644"
+  register: bbr_config_status
+
+- name: load all configuration files
+  shell: sysctl --system
+  when: bbr_config_status.changed
+
+- name: Ensure bbr is enabled
+  sysctl: "name={{ item.name }} value={{ item.value }}"
+  with_items: "{{ bbr_sysctl }}"

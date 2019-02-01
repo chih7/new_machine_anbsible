@@ -1,1 +1,8 @@
 ---
+packages:
+  - zsh
+  - vim
+  - git
+  - sudo
+  - rsync
+  - iptables-services

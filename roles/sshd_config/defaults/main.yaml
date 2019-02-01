@@ -1,0 +1,4 @@
+---
+sshd_PermitRootLogin: 'no'
+sshd_PasswordAuthentication: 'no'
+sshd_ListenPort: '60022'

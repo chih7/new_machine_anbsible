@@ -1,0 +1,57 @@
+---
+- name: install the 'Development tools' package group
+  yum:
+    name: "@Development tools"
+    state: present
+
+- name: install centos-release-scl first
+  yum:
+    name: "centos-release-scl"
+    state: present
+
+- name: install depend packages
+  yum:
+    name: "{{ depend_packages }}"
+    state: present
+  register: depend_installation
+
+- name: download libtorrent and unarchive
+  unarchive:
+    src: https://github.com/arvidn/libtorrent/releases/download/libtorrent_1_1_12/libtorrent-rasterbar-1.1.12.tar.gz
+    dest: /usr/local/src
+    remote_src: yes
+
+- name: make & install libtorrent
+  shell: |
+    source /opt/rh/devtoolset-3/enable
+    ./configure --disable-debug --prefix=/usr CXXFLAGS=-std=c++11
+    make -j$(nproc)
+    make install
+    ln -s /usr/lib/pkgconfig/libtorrent-rasterbar.pc /usr/lib64/pkgconfig/libtorrent-rasterbar.pc
+    ln -s /usr/lib/libtorrent-rasterbar.so.9 /usr/lib64/libtorrent-rasterbar.so.9
+  args:
+    chdir: /usr/local/src/libtorrent-rasterbar-1.1.12
+    executable: /bin/bash
+
+- name: download qBittorrent-Enhanced-Edition and unarchive
+  unarchive:
+    src: https://github.com/c0re100/qBittorrent-Enhanced-Edition/archive/release-4.1.5.1.tar.gz
+    dest: /usr/local/src
+    remote_src: yes
+
+- name: make & install qBittorrent-Enhanced-Edition
+  shell: |
+    source /opt/rh/devtoolset-3/enable
+    ./configure --disable-debug --prefix=/usr --disable-gui --enable-systemd CPPFLAGS=-I/usr/include/qt5  CXXFLAGS=-std=c++11
+    make -j$(nproc)
+    make install
+  args:
+    chdir: /usr/local/src/qBittorrent-Enhanced-Edition-release-4.1.5.1
+    executable: /bin/bash
+
+- name: enable and start service
+  systemd:
+    name: "qbittorrent-nox@{{ user_name }}"
+    state: started
+    enabled: yes
+  when: start_service
