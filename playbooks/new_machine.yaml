@@ -7,5 +7,6 @@
     # - role: disable_iptables_selinux
     # - role: qbittorrent-nox
     # - role: bbr
-    - role: nextcloud
+    # - role: nextcloud
+    - role: systemd-swap
     # - role: sshd_config # The last step to modify sshd config
