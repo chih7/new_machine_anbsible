@@ -20,6 +20,12 @@
   failed_when: false
   register: root_pwd_check
 
+# tasks for mysql_user and mysql_db
+- name: Install MySQL-python as prerequisite for mysql Ansible module
+  yum:
+    name: MySQL-python
+    state: present
+
 - name: Set MariaDB root password for the first time (root@localhost)
   mysql_user:
     name: root

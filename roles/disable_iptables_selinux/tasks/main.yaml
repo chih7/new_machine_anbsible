@@ -9,7 +9,7 @@
 - name: Install libselinux as prerequisite for SELinux Ansible module
   yum:
     name: ['libselinux-python', 'libsemanage-python']
-    state: latest
+    state: present
 
 - name: Disable SELinux at next reboot
   selinux:
