@@ -1,4 +1,6 @@
 ---
+webtatic_repofile_path: "/etc/yum.repos.d/webtatic.repo"
+
 apache_packages:
   - httpd
   - php72w
@@ -28,4 +30,5 @@ mariadb_users:
 
 mariadb_databases:
   - name: nextcloud
+
 

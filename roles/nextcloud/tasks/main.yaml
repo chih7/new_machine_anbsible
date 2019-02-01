@@ -4,9 +4,14 @@
     name: 'epel-release'
     state: present
 
+- name: Check if webtatic repo is already configured.
+  stat: path={{ webtatic_repofile_path }}
+  register: webtatic_repofile_result
+
 - name: Install webtatic repo.
   shell: rpm -Uvh {{ webtatic_repo_url }}
   register: result
+  when: not webtatic_repofile_result.stat.exists
 
 - name: Install web server and PHP packages
   yum:
@@ -42,6 +47,8 @@
     src: https://download.nextcloud.com/server/releases/latest-15.tar.bz2
     dest: /var/www/html
     remote_src: yes
+    owner: apache
+    group: apache
 
 - name: Creates data directory
   file:
@@ -49,6 +56,13 @@
     state: directory
     owner: apache
     group: apache
+
+- name: "Config httpd"
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^Listen '
+    insertafter: '^#Listen '
+    line: 'Listen 8080'
 
 - name: Config nextcloud httpd
   template:
