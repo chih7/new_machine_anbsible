@@ -3,8 +3,9 @@
   hosts: la
 
   roles:
-    - role: new_user
-    - role: disable_iptables_selinux
-    - role: qbittorrent-nox
-    - role: bbr
-    - role: sshd_config # The last step to modify sshd config
+    # - role: new_user
+    # - role: disable_iptables_selinux
+    # - role: qbittorrent-nox
+    # - role: bbr
+    - role: nextcloud
+    # - role: sshd_config # The last step to modify sshd config

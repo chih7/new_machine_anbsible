@@ -1,0 +1,31 @@
+---
+apache_packages:
+  - httpd
+  - php72w
+  - php72w-dom
+  - php72w-mbstring
+  - php72w-gd
+  - php72w-pdo
+  - php72w-json
+  - php72w-xml
+  - php72w-zip
+  - php72w-curl
+  - php72w-pear
+  - php72w-intl
+  - setroubleshoot-server
+  - bzip2
+  - php72w-mysql
+  - php-opcache
+
+webtatic_repo_url: "https://mirror.webtatic.com/yum/el7/webtatic-release.rpm"
+
+mariadb_users:
+  - name: nextcloud
+    password: nextcloud
+    priv: 'nextcloud.*:ALL'
+    append_privs: 'no'
+    host: 'localhost'
+
+mariadb_databases:
+  - name: nextcloud
+

@@ -1,0 +1,83 @@
+---
+- name: Install epel-release packages
+  yum:
+    name: 'epel-release'
+    state: present
+
+- name: Install webtatic repo.
+  shell: rpm -Uvh {{ webtatic_repo_url }}
+  register: result
+
+- name: Install web server and PHP packages
+  yum:
+    name: "{{ apache_packages }}"
+    state: present
+  register: installation
+  when: result is success
+
+- name: Create nextcloud databases
+  mysql_db:
+    name: "{{ item.name }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: present
+  with_items: "{{ mariadb_databases }}"
+  register: db_creation
+
+- name: Create the users
+  mysql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    host: "{{ item.host|default('localhost') }}"
+    priv: "{{ item.priv }}"
+    append_privs: "{{ item.append_privs|default('no') }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: present
+  with_items: "{{ mariadb_users }}"
+  when: db_creation is success
+
+- name: download nextcloud and unarchive
+  unarchive:
+    src: https://download.nextcloud.com/server/releases/latest-15.tar.bz2
+    dest: /var/www/html
+    remote_src: yes
+
+- name: Creates data directory
+  file:
+    path: /var/www/html/nextcloud/data
+    state: directory
+    owner: apache
+    group: apache
+
+- name: Config nextcloud httpd
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: "nextcloud.conf"
+      dest: "/etc/httpd/conf.d"
+      mode: "0644"
+  register: httpd_config_status
+
+- name: Config Enabling OPcache
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: "opcache.ini"
+      dest: "/etc/php.d"
+      mode: "0644"
+  register: OPcache_config_status
+
+- name: enable and start service
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
