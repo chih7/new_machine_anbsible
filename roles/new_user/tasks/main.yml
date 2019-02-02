@@ -48,7 +48,7 @@
 
 - name: Backing up existing ~/.zshrc
   shell: if [ -f ~/.zshrc ]; then mv ~/.zshrc{,.orig}; fi
-  when: installation is success
+  when: base_install is success
   become: yes
   become_user: "{{ user_name }}"
 
@@ -56,7 +56,7 @@
   git:
     repo=https://github.com/robbyrussell/oh-my-zsh
     dest=~/.oh-my-zsh
-  when: installation is success
+  when: base_install is success
   register: cloning
   become: yes
   become_user: "{{ user_name }}"

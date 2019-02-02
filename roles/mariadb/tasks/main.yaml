@@ -1,6 +1,6 @@
 ---
 - name: install mariadb-server packages
-  yum:
+  pacman:
     name: mariadb-server
     state: present
   register: installation
@@ -22,7 +22,7 @@
 
 # tasks for mysql_user and mysql_db
 - name: Install MySQL-python as prerequisite for mysql Ansible module
-  yum:
+  pacman:
     name: MySQL-python
     state: present
 

@@ -1,6 +1,6 @@
 ---
 - name: Install epel-release packages
-  yum:
+  pacman:
     name: 'epel-release'
     state: present
 
@@ -14,7 +14,7 @@
   when: not webtatic_repofile_result.stat.exists
 
 - name: Install web server and PHP packages
-  yum:
+  pacman:
     name: "{{ apache_packages }}"
     state: present
   register: installation

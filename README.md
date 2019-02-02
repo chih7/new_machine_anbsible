@@ -1,3 +1,3 @@
 # new machine ansible
 
-For CentOS 7
+For Arch  linux

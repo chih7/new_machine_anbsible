@@ -1,11 +1,11 @@
 ---
 - name: upgrade all packages
-  yum:
-    name: '*'
-    state: latest
+  pacman:
+    update_cache: yes
+    upgrade: yes
 
 - name: install base packages
-  yum:
+  pacman:
     name: "{{ packages }}"
     state: present
-  register: installation
+  register: base_install

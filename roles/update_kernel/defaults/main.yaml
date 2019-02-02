@@ -1,5 +1,0 @@
----
-elrepo_repo_url: "https://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm"
-elrepo_repo_gpg_key_url: "https://www.elrepo.org/RPM-GPG-KEY-elrepo.org"
-elrepo_repofile_path: "/etc/yum.repos.d/elrepo.repo"
-elrepo_repo_disabled: False

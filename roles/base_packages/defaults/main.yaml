@@ -5,4 +5,5 @@ packages:
   - git
   - sudo
   - rsync
-  - iptables-services
+  - bind-tools
+  - iproute2
