@@ -28,59 +28,27 @@
   with_items: "{{ mariadb_users }}"
   when: db_creation is success
 
+- name: Creates www directory
+  file:
+    path: /opt/www
+    state: directory
+    owner: http
+    group: http
+
 - name: download nextcloud and unarchive
   unarchive:
     src: https://download.nextcloud.com/server/releases/latest-15.tar.bz2
-    dest: /var/www/html
+    dest: /opt/www
     remote_src: yes
     owner: http
     group: http
 
 - name: Creates data directory
   file:
-    path: /var/www/html/nextcloud/data
+    path: /opt/www/nextcloud/data
     state: directory
     owner: http
     group: http
-
-- name: "Config httpd"
-  lineinfile:
-    path: /etc/httpd/conf/httpd.conf
-    regexp: '^Listen '
-    insertafter: '^#Listen '
-    line: 'Listen 8080'
-
-- name: "Config httpd Virtual hosts"
-  lineinfile:
-    path: /etc/httpd/conf/httpd.conf
-    line: 'Include conf/vhosts/nextcloud.conf'
-
-- name: "Config httpd PHP"
-  lineinfile:
-    path: /etc/httpd/conf/httpd.conf
-    regexp: '^LoadModule mpm_event_module modules/mod_mpm_event.so'
-    line: '#LoadModule mpm_event_module modules/mod_mpm_event.so'
-
-- name: "Config httpd PHP"
-  lineinfile:
-    path: /etc/httpd/conf/httpd.conf
-    regexp: '^#LoadModule mpm_prefork_module modules/mod_mpm_prefork.so'
-    line: 'LoadModule mpm_prefork_module modules/mod_mpm_prefork.so'
-
-- name: "Config httpd PHP"
-  blockinfile:
-    path: /etc/httpd/conf/httpd.conf
-    insertafter: '^#LoadModule rewrite_module modules/mod_rewrite.so'
-    content: |
-        LoadModule php7_module modules/libphp7.so
-        AddHandler php7-script .php
-
-- name: "Config httpd PHP"
-  blockinfile:
-    path: /etc/httpd/conf/httpd.conf
-    insertafter: '^#Include conf/extra/httpd-ssl.conf'
-    content: |
-        Include conf/extra/php7_module.conf
 
 - name: Config nextcloud httpd
   template:
@@ -90,8 +58,11 @@
     group: root
     mode: "{{ item.mode }}"
   with_items:
+    - src: "httpd.conf"
+      dest: "/etc/httpd/conf"
+      mode: "0644"
     - src: "nextcloud.conf"
-      dest: "/etc/httpd/conf/vhosts"
+      dest: "/etc/httpd/conf/extra"
       mode: "0644"
   register: httpd_config_status
 
