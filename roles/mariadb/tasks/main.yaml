@@ -1,16 +1,24 @@
 ---
 - name: install mariadb-server packages
   pacman:
-    name: mariadb-server
+    name: mariadb
     state: present
-  register: installation
+  register: mariadb_install
+
+
+
+- name: init mariadb
+  shell: |
+    mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+  args:
+    executable: /bin/bash
 
 - name: enable and start service
   systemd:
     name: mariadb
     state: started
     enabled: yes
-  when: installation is success
+  when: mariadb_install is success
 
 # This command will fail when the root password was set previously
 - name: Check if root password is set
@@ -21,9 +29,9 @@
   register: root_pwd_check
 
 # tasks for mysql_user and mysql_db
-- name: Install MySQL-python as prerequisite for mysql Ansible module
+- name: Install PyMySQL as prerequisite for mysql Ansible module
   pacman:
-    name: MySQL-python
+    name: python-pymysql
     state: present
 
 - name: Set MariaDB root password for the first time (root@localhost)

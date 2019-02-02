@@ -1,4 +1,11 @@
 ---
+- name: "Config archlinucn Repository"
+  blockinfile:
+    path: /etc/pacman.conf
+    content: |
+        [archlinuxcn]
+        Server = https://cdn.repo.archlinuxcn.org/$arch
+
 - name: upgrade all packages
   pacman:
     update_cache: yes

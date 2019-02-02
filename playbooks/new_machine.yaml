@@ -3,8 +3,10 @@
   hosts: la
 
   roles:
+    # - role: base_packages
     # - role: new_user
-    - role: qbittorrent-nox
+    # - role: systemd-swap
+    # - role: qbittorrent-nox
     # - role: bbr
-    # - role: nextcloud
+    - role: nextcloud
     # - role: sshd_config # The last step to modify sshd config

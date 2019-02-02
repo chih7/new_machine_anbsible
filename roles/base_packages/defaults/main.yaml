@@ -1,5 +1,6 @@
 ---
 packages:
+  - archlinuxcn-keyring
   - zsh
   - vim
   - git
@@ -7,3 +8,4 @@ packages:
   - rsync
   - bind-tools
   - iproute2
+  - yay

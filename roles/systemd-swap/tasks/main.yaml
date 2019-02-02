@@ -1,0 +1,33 @@
+---
+
+- name: Swap file creation
+  shell: |
+    fallocate -l {{ swap_file_size }} /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+
+- name: "Config swap file in fstab"
+  lineinfile:
+    dest: "/etc/fstab"
+    line: "/swapfile none swap defaults 0 0"
+    backup: True
+
+- name: install systemd-swap packages
+  pacman:
+    name: systemd-swap
+    state: present
+  register: systemd-swap_install
+
+- name: "Config systemd-swap"
+  lineinfile:
+    path: /etc/systemd/swap.conf
+    regexp: '^swapfc_enabled=0'
+    line: 'swapfc_enabled=1'
+
+- name: enable and start service
+  systemd:
+    name: systemd-swap
+    state: started
+    enabled: yes
+    daemon_reload: yes

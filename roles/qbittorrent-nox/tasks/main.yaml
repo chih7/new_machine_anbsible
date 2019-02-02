@@ -37,7 +37,7 @@
 
 - name: install
   shell: |
-    sudo pacman -U qbittorrent-nox*.pkg.tar.xz
+    pacman -U --noconfirm --noprogressbar qbittorrent-nox*.pkg.tar.xz
   args:
     chdir: "/home/{{ user_name }}/qbittorrent-nox"
     executable: /bin/bash

@@ -1,24 +1,10 @@
 ---
-- name: Install epel-release packages
-  pacman:
-    name: 'epel-release'
-    state: present
-
-- name: Check if webtatic repo is already configured.
-  stat: path={{ webtatic_repofile_path }}
-  register: webtatic_repofile_result
-
-- name: Install webtatic repo.
-  shell: rpm -Uvh {{ webtatic_repo_url }}
-  register: result
-  when: not webtatic_repofile_result.stat.exists
 
 - name: Install web server and PHP packages
   pacman:
     name: "{{ apache_packages }}"
     state: present
-  register: installation
-  when: result is success
+  register: apache_install
 
 - name: Create nextcloud databases
   mysql_db:
@@ -47,15 +33,15 @@
     src: https://download.nextcloud.com/server/releases/latest-15.tar.bz2
     dest: /var/www/html
     remote_src: yes
-    owner: apache
-    group: apache
+    owner: http
+    group: http
 
 - name: Creates data directory
   file:
     path: /var/www/html/nextcloud/data
     state: directory
-    owner: apache
-    group: apache
+    owner: http
+    group: http
 
 - name: "Config httpd"
   lineinfile:
@@ -63,6 +49,38 @@
     regexp: '^Listen '
     insertafter: '^#Listen '
     line: 'Listen 8080'
+
+- name: "Config httpd Virtual hosts"
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    line: 'Include conf/vhosts/nextcloud.conf'
+
+- name: "Config httpd PHP"
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^LoadModule mpm_event_module modules/mod_mpm_event.so'
+    line: '#LoadModule mpm_event_module modules/mod_mpm_event.so'
+
+- name: "Config httpd PHP"
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^#LoadModule mpm_prefork_module modules/mod_mpm_prefork.so'
+    line: 'LoadModule mpm_prefork_module modules/mod_mpm_prefork.so'
+
+- name: "Config httpd PHP"
+  blockinfile:
+    path: /etc/httpd/conf/httpd.conf
+    insertafter: '^#LoadModule rewrite_module modules/mod_rewrite.so'
+    content: |
+        LoadModule php7_module modules/libphp7.so
+        AddHandler php7-script .php
+
+- name: "Config httpd PHP"
+  blockinfile:
+    path: /etc/httpd/conf/httpd.conf
+    insertafter: '^#Include conf/extra/httpd-ssl.conf'
+    content: |
+        Include conf/extra/php7_module.conf
 
 - name: Config nextcloud httpd
   template:
@@ -73,11 +91,11 @@
     mode: "{{ item.mode }}"
   with_items:
     - src: "nextcloud.conf"
-      dest: "/etc/httpd/conf.d"
+      dest: "/etc/httpd/conf/vhosts"
       mode: "0644"
   register: httpd_config_status
 
-- name: Config Enabling OPcache
+- name: Config PHP
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -85,10 +103,10 @@
     group: root
     mode: "{{ item.mode }}"
   with_items:
-    - src: "opcache.ini"
-      dest: "/etc/php.d"
+    - src: "php.ini"
+      dest: "/etc/php"
       mode: "0644"
-  register: OPcache_config_status
+  register: PHP_config_status
 
 - name: enable and start service
   systemd:
