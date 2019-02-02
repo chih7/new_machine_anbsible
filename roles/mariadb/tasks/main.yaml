@@ -5,13 +5,16 @@
     state: present
   register: mariadb_install
 
-
+- name: Check if mysql_install_db is already configured.
+  stat: path=/var/lib/mysql/mysql
+  register: mysql_install_db_result
 
 - name: init mariadb
   shell: |
     mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
   args:
     executable: /bin/bash
+  when: mysql_install_db_result.stat.e
 
 - name: enable and start service
   systemd:
