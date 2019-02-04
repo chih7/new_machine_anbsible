@@ -1,0 +1,68 @@
+---
+# version to install
+seafile_install_version:    '6.3.9'
+
+# distribution download info
+seafile_tarball_url:        'https://blog.chih.me/seafile-pro-server_{{ seafile_install_version }}_x86-64.tar.gz'
+
+# names
+seafile_user:               http
+seafile_deploy_path:        /opt/www/seafile
+seafile_data_home:          /opt/www/seafile/data
+
+seafile_max_upload_size_enable:         false # set to true to enable max
+seafile_max_upload_size:                200  # MB
+seafile_max_download_dir_size_enable:   false # set to true to enable max
+seafile_max_download_dir_size:          200  # MB
+
+# webdav settings
+seafile_webdav_enabled:     false
+seafile_webdav_fastcgi:     false
+seafile_webdav_path:        '/dav'
+
+# database settings
+seafile_backend:            'sqlite'
+# the next settings are not used for sqlite
+seafile_db_host:            '127.0.0.1'
+seafile_db_port:            '3306'
+seafile_db_user:            'seafile'
+seafile_db_pass:            's3cr3t'
+seafile_db_name:
+  ccnet:                    'ccnet'
+  seafile:                  'seafile'
+  seahub:                   'seahub'
+
+dependency_packages:
+  - python2-gobject2
+  - python2-simplejson
+  - python2-urllib3
+  - python2-pillow
+  - python2-setuptools
+  - python2-memcached
+  - python2-ldap
+  - python2-boto
+  - python2-requests
+  - python2-pylibmc
+  - mysql-python
+  - mariadb-libs
+  - libevent
+  - oniguruma
+  - rsync
+  - jdk8-openjdk
+  - poppler
+  - ffmpeg
+  - libreoffice-fresh
+  - wqy-zenhei
+  - wqy-microhei
+  - noto-fonts
+  - noto-fonts-cjk
+
+mariadb_users:
+  - name: nextcloud
+    password: nextcloud
+    priv: 'nextcloud.*:ALL'
+    append_privs: 'no'
+    host: 'localhost'
+
+mariadb_databases:
+  - name: nextcloud

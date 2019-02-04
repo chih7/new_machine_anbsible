@@ -1,0 +1,79 @@
+---
+
+- name: Install dependencies packages
+  pacman:
+    name: "{{ dependency_packages }}"
+    state: present
+  register: dependency_packages_install
+
+- name: Creates www directory
+  file:
+    path: /opt/www
+    state: directory
+    owner: '{{ seafile_user }}'
+    group: '{{ seafile_user }}'
+    mode: 0755
+
+- name: download seafile and unarchive
+  unarchive:
+    src: "{{ seafile_tarball_url }}"
+    dest: /opt/www
+    remote_src: yes
+    owner: http
+    group: http
+
+- name: rename folder
+  command: mv /opt/www/seafile-pro-server-{{ seafile_install_version }} {{ seafile_deploy_path }}
+
+- name: create directories
+  file:
+    path:               '{{ seafile_data_home }}'
+    owner:              '{{ seafile_user }}'
+    group:              '{{ seafile_user }}'
+    mode:               0755
+    state:              directory
+
+- name: Create seafile databases
+  mysql_db:
+    name: "{{ item.name }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: present
+  with_items: "{{ mariadb_databases }}"
+  register: db_creation
+
+- name: Create the users
+  mysql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    host: "{{ item.host|default('localhost') }}"
+    priv: "{{ item.priv }}"
+    append_privs: "{{ item.append_privs|default('no') }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    state: present
+  with_items: "{{ mariadb_users }}"
+  when: db_creation is success
+
+
+- name: Config seafile httpd
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - src: "httpd.conf"
+      dest: "/etc/httpd/conf"
+      mode: "0644"
+    - src: "seafile.conf"
+      dest: "/etc/httpd/conf/extra"
+      mode: "0644"
+  register: httpd_config_status
+
+- name: enable and start service
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
