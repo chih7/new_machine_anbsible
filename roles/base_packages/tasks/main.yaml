@@ -11,8 +11,15 @@
     update_cache: yes
     upgrade: yes
 
+- name: Install archlinuxcn-keyring package
+  pacman:
+    name: archlinuxcn-keyring
+    state: present
+  register: archlinuxcn_keyring_install
+
 - name: install base packages
   pacman:
     name: "{{ packages }}"
     state: present
   register: base_install
+  when: archlinuxcn_keyring_install is success

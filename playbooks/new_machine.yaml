@@ -4,9 +4,9 @@
 
   roles:
     # - role: base_packages
-    # - role: new_user
-    # - role: systemd-swap
-    # - role: qbittorrent-nox
-    # - role: bbr
-    - role: nextcloud
-    # - role: sshd_config # The last step to modify sshd config
+    - role: new_user
+    - role: systemd-swap
+    - role: qbittorrent-nox
+    - role: bbr
+    # - role: nextcloud
+    - role: sshd_config # The last step to modify sshd config
