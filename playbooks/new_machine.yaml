@@ -1,6 +1,6 @@
 ---
 - name: Set New Machine
-  hosts: la
+  hosts: sg-google
 
   roles:
     # - role: base_packages
